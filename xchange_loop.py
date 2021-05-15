@@ -5,7 +5,8 @@ import yfinance as yf
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog 
-
+from tkinter import messagebox
+import traceback
 
 
 def stock_looper(stocks, period, interval):
@@ -127,6 +128,13 @@ def get_day_week_month():
 def browse():
     save_loc = filedialog.askdirectory()
     save_var.set(save_loc)
+
+#error callback
+def show_error(self, *args):
+  err = traceback.format_exception(*args)
+  messagebox.showerror("Exception", err)
+
+Tk.report_callback_exception = show_error
 
 #start tkinter
 root = Tk()
