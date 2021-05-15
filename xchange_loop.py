@@ -47,6 +47,8 @@ def stock_looper(stocks, period, interval):
           val=""
       
         return val
+    
+
 
       #create columns that shows whether or not a day is a match
       df["HH"] = df.apply(hh, axis=1)
@@ -55,9 +57,14 @@ def stock_looper(stocks, period, interval):
       #golden goose
       df["GOLDEN GOOSE"] = df.apply(lambda row: "Golden Goose" if (len(row["HH"]) >1) and (len(row["LL"]) > 1) else "", axis=1)
       
-
       #drop the calculator columns
       df.drop(columns=["H day -1", "H day +1", "H day -2", "L day -1", "L day +1", "L day -2"], inplace=True)
+  
+      #reset index to avoid timezone error
+      if (interval=="1m" or interval=="5m" or interval=="15m" or interval=="60m"):
+        df.reset_index(level=0, inplace=True)
+        df["Datetime"] = df["Datetime"].dt.tz_localize(tz=None)
+        df.set_index('Datetime', drop=True, inplace=True)
       
       #save df and ticker to tuple
       ticker_df_tuple = (ticker, df)
@@ -78,10 +85,7 @@ def stock_looper(stocks, period, interval):
   
   writer = pd.ExcelWriter(save_var.get()+'/Stock overview - {} - {}.xlsx'.format(period, interval), engine="xlsxwriter")
   
-  if (interval=="1m" or interval=="5m" or interval=="15m" or interval=="60m"):
-    df.reset_index(level=0, inplace=True)
-    df["Datetime"] = df["Datetime"].dt.tz_localize(tz=None)
-    df.set_index('Datetime', drop=True, inplace=True)
+
   
   for ticker, df in stock_dfs:
     try:
@@ -105,8 +109,6 @@ def stock_looper(stocks, period, interval):
 
       red = workbook.add_format({'bold': 1, "bg_color": '#FFC7CE', "font_color": '#9C0006'})
 
-      title = workbook.add_format({"bold": 1, "font_size": 18})
-
       #apply formatting
       worksheet.set_column('A:A', 18)
       worksheet.set_column('B:O', 15)
@@ -122,11 +124,11 @@ def stock_looper(stocks, period, interval):
       print(error)
       pass
   writer.save()
-  print("all done!")
+  
   
 
 def get_day_week_month():
-  stocks = stock_var.get().replace(" ", "").split(',')
+  stocks = stock_var.get().upper().replace(" ", "").split(',')
   print(stocks)
   stock_looper(stocks, "7d", "1m")
   stock_looper(stocks, "1mo", "5m")
@@ -135,6 +137,7 @@ def get_day_week_month():
   stock_looper(stocks, "max", "1d")
   stock_looper(stocks, "max", "1wk")
   stock_looper(stocks, "max", "1mo")
+  print("all done!")
 
 def browse():
     save_loc = filedialog.askdirectory()
