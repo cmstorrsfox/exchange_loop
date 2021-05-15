@@ -77,7 +77,12 @@ def stock_looper(stocks, period, interval):
 
   
   writer = pd.ExcelWriter(save_var.get()+'/Stock overview - {} - {}.xlsx'.format(period, interval), engine="xlsxwriter")
-
+  
+  if (interval=="1m" or interval=="5m" or interval=="15m" or interval=="60m"):
+    df.reset_index(level=0, inplace=True)
+    df["Datetime"] = df["Datetime"].dt.tz_localize(tz=None)
+    df.set_index('Datetime', drop=True, inplace=True)
+  
   for ticker, df in stock_dfs:
     try:
       df.to_excel(writer, sheet_name=ticker)
@@ -100,6 +105,8 @@ def stock_looper(stocks, period, interval):
 
       red = workbook.add_format({'bold': 1, "bg_color": '#FFC7CE', "font_color": '#9C0006'})
 
+      title = workbook.add_format({"bold": 1, "font_size": 18})
+
       #apply formatting
       worksheet.set_column('A:A', 18)
       worksheet.set_column('B:O', 15)
@@ -121,8 +128,12 @@ def stock_looper(stocks, period, interval):
 def get_day_week_month():
   stocks = stock_var.get().replace(" ", "").split(',')
   print(stocks)
-  stock_looper(stocks, "max", "1wk")
+  stock_looper(stocks, "7d", "1m")
+  stock_looper(stocks, "1mo", "5m")
+  stock_looper(stocks, "1mo", "15m")
+  stock_looper(stocks, "2y", "60m")
   stock_looper(stocks, "max", "1d")
+  stock_looper(stocks, "max", "1wk")
   stock_looper(stocks, "max", "1mo")
 
 def browse():
