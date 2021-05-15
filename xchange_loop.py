@@ -65,12 +65,12 @@ def stock_looper(stocks, period, interval):
       #append to array of dfs for later loop
       stock_dfs.append(ticker_df_tuple)
       if i < len(stocks):
-        message_var.set("done - moving on to next stock")
+        print("done - moving on to next stock")
       else:
         pass
     
     except(error):
-      message_var.set("There is a problem with this ticker symbol. Moving on to the next stock")
+      print("There is a problem with this ticker symbol. Moving on to the next stock")
       print(error)
       pass
   
@@ -111,7 +111,7 @@ def stock_looper(stocks, period, interval):
       worksheet.conditional_format("I2:O{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"GOLDEN GOOSE"', "format": yellow})
 
     except(error):
-      message_var.set("an error occurred when writing the worksheet. Moving on to next stock")
+      print("an error occurred when writing the worksheet. Moving on to next stock")
       print(error)
       pass
   writer.save()
@@ -151,14 +151,14 @@ input = ttk.Frame(root)
 instructions = ttk.Label(input, text="Enter the stocks you want daily, weekly and monthly data on in the box below separating them with a ','", wraplength=500, font=("Arial", 14, "bold"), justify="center")
 stock_entry = ttk.Entry(input, textvariable=stock_var, width=50)
 save_location = ttk.Entry(input, textvariable=save_var, width=50)
-current_step = ttk.Label(input, textvariable=message_var)
+current_step = ttk.Label(input, textvariable=message_var, font=("Arial", 16, "bold"), justify="center")
 browse_btn = ttk.Button(input, text="Browse", command=browse)
 go_btn = ttk.Button(input, text="Go", command=get_day_week_month)
 
 
 #layout
 input.grid(column=0, row=1)
-current_step.grid(column=1, row=6)
+current_step.grid(column=1, row=6, pady=20)
 instructions.grid(column=0, row=0, columnspan=3, padx=10, pady=5)
 stock_entry.grid(column=1, row=2, pady=5)
 save_location.grid(column=1, row=3, pady=5)
