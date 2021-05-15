@@ -115,7 +115,7 @@ def stock_looper(stocks, period, interval):
       print(error)
       pass
   writer.save()
-  message_var.set("all done!")
+  print("all done!")
   
 
 def get_day_week_month():
@@ -143,7 +143,6 @@ root.geometry("500x500")
 
 #tkinter variables
 stock_var = StringVar()
-message_var = StringVar()
 save_var = StringVar()
 
 #elements
@@ -151,14 +150,12 @@ input = ttk.Frame(root)
 instructions = ttk.Label(input, text="Enter the stocks you want daily, weekly and monthly data on in the box below separating them with a ','", wraplength=500, font=("Arial", 14, "bold"), justify="center")
 stock_entry = ttk.Entry(input, textvariable=stock_var, width=50)
 save_location = ttk.Entry(input, textvariable=save_var, width=50)
-current_step = ttk.Label(input, textvariable=message_var, font=("Arial", 16, "bold"), justify="center")
 browse_btn = ttk.Button(input, text="Browse", command=browse)
 go_btn = ttk.Button(input, text="Go", command=get_day_week_month)
 
 
 #layout
 input.grid(column=0, row=1)
-current_step.grid(column=1, row=6, pady=20)
 instructions.grid(column=0, row=0, columnspan=3, padx=10, pady=5)
 stock_entry.grid(column=1, row=2, pady=5)
 save_location.grid(column=1, row=3, pady=5)
