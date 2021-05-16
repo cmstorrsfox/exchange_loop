@@ -29,6 +29,7 @@ def stock_looper(stocks, period, interval):
       df["L day -1"] = df["Low"].shift(periods=1)
       df["L day +1"] = df["Low"].shift(periods=-1)
       df["L day -2"] = df["Low"].shift(periods=2)
+      
 
       #function to get higher high
       def hh(row):
@@ -50,15 +51,25 @@ def stock_looper(stocks, period, interval):
     
 
 
+
       #create columns that shows whether or not a day is a match
       df["HH"] = df.apply(hh, axis=1)
       df["LL"] = df.apply(ll, axis=1)
 
+      #get data for the wicked wango
+      df["pre HH"] = df["HH"].shift(periods=-1)
+      df["pre LL"] = df["LL"].shift(periods=-1)
+
+   
       #golden goose
-      df["GOLDEN GOOSE"] = df.apply(lambda row: "Golden Goose" if (len(row["HH"]) >1) and (len(row["LL"]) > 1) else "", axis=1)
+      df["GOLDEN GOOSE"] = df.apply(lambda row: "GOLDEN GOOSE" if (len(row["HH"]) >1) and (len(row["LL"]) > 1) else "", axis=1)
+
+      #wicked wango
+      df["WICKED WANGO"] = df.apply(lambda row: "WICKED WANGO" if ((row["HH"] == "Higher High") and (row["pre LL"] == "Lower Low")) or ((row["LL"] == "Lower Low") and (row["pre HH"] == "Higher High")) else "", axis=1)
+
       
       #drop the calculator columns
-      df.drop(columns=["H day -1", "H day +1", "H day -2", "L day -1", "L day +1", "L day -2"], inplace=True)
+      df.drop(columns=["H day -1", "H day +1", "H day -2", "L day -1", "L day +1", "L day -2", "pre HH", "pre LL"], inplace=True)
   
       #reset index to avoid timezone error
       if (interval=="1m" or interval=="5m" or interval=="15m" or interval=="60m"):
@@ -109,15 +120,19 @@ def stock_looper(stocks, period, interval):
 
       red = workbook.add_format({'bold': 1, "bg_color": '#FFC7CE', "font_color": '#9C0006'})
 
+      orange = workbook.add_format({'bold': 1, 'bg_color': '#ffcc66', 'font_color': '#FF8C00'})
+
       #apply formatting
       worksheet.set_column('A:A', 18)
       worksheet.set_column('B:O', 15)
 
-      worksheet.conditional_format("G2:M{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"Higher High"', "format": green})
+      worksheet.conditional_format("G2:G{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"Higher High"', "format": green})
 
-      worksheet.conditional_format("H2:N{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"Lower Low"', "format": red})
+      worksheet.conditional_format("H2:H{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"Lower Low"', "format": red})
 
-      worksheet.conditional_format("I2:O{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"GOLDEN GOOSE"', "format": yellow})
+      worksheet.conditional_format("I2:I{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"GOLDEN GOOSE"', "format": yellow})
+
+      worksheet.conditional_format("J2:J{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"WICKED WANGO"', "format": orange})
 
     except(error):
       print("an error occurred when writing the worksheet. Moving on to next stock")
