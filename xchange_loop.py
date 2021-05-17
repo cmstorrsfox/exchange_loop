@@ -1,4 +1,5 @@
 from os import error
+import os
 import pandas as pd
 import numpy as np
 import yfinance as yf
@@ -86,6 +87,7 @@ def stock_looper(stocks, period, interval):
         print("done - moving on to next stock")
       else:
         pass
+      
     
     except(error):
       print("There is a problem with this ticker symbol. Moving on to the next stock")
@@ -93,13 +95,16 @@ def stock_looper(stocks, period, interval):
       pass
   
 
-  
+
+
+
   writer = pd.ExcelWriter(save_var.get()+'/Stock overview - {} - {}.xlsx'.format(period, interval), engine="xlsxwriter")
   
 
   
   for ticker, df in stock_dfs:
     try:
+      
       df.to_excel(writer, sheet_name=ticker)
 
       #Get the xlsxwriter workbook and worksheet object
@@ -120,7 +125,7 @@ def stock_looper(stocks, period, interval):
 
       red = workbook.add_format({'bold': 1, "bg_color": '#FFC7CE', "font_color": '#9C0006'})
 
-      orange = workbook.add_format({'bold': 1, 'bg_color': '#ffcc66', 'font_color': '#FF8C00'})
+      orange = workbook.add_format({'bold': 1, 'bg_color': '#ffcc66', 'font_color': '#cc3300'})
 
       #apply formatting
       worksheet.set_column('A:A', 18)
