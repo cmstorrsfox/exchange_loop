@@ -15,6 +15,15 @@ def stock_looper(stocks, period, interval):
   i = 0
   for ticker in stocks:
     try:
+      #create path for saving data
+      stock_dir = "/"+ticker
+      save_path = save_var.get()+stock_dir
+
+      if os.path.exists(save_path):
+        pass
+      else:
+        os.makedirs(save_path)
+
       i +=1
       print("processing {} stock data (stock {}/{})".format(ticker, i, len(stocks)))
       ticker_data = yf.Ticker(ticker)
@@ -96,9 +105,9 @@ def stock_looper(stocks, period, interval):
   
 
 
+  
 
-
-  writer = pd.ExcelWriter(save_var.get()+'/Stock overview - {} - {}.xlsx'.format(period, interval), engine="xlsxwriter")
+  writer = pd.ExcelWriter(save_path+'/Stock overview - {} - {}.xlsx'.format(period, interval), engine="xlsxwriter")
   
 
   
