@@ -8,6 +8,9 @@ from tkinter import ttk
 from tkinter import filedialog 
 from tkinter import messagebox
 import traceback
+import warnings
+
+warnings.filterwarnings("ignore")
 
 
 def stock_looper(stocks, period, interval):
@@ -77,7 +80,42 @@ def stock_looper(stocks, period, interval):
       #wicked wango
       df["WICKED WANGO"] = df.apply(lambda row: "WICKED WANGO" if ((row["HH"] == "Higher High") and (row["pre LL"] == "Lower Low")) or ((row["LL"] == "Lower Low") and (row["pre HH"] == "Higher High")) else "", axis=1)
 
+      #get average time between wicked wangos
+      df_ww = df[df["WICKED WANGO"] == "WICKED WANGO"]
+      df_ww.reset_index(level=0, inplace=True)
+      if (interval=="1m" or interval=="5m" or interval=="15m" or interval=="60m"):
+        df_ww["date_prev_ww"] = df_ww["Datetime"].shift(periods=1)
+        df_ww["time_diff"] = (df_ww["Datetime"] - df_ww["date_prev_ww"]).dt.days
+      else:
+        df_ww["date_prev_ww"] = df_ww["Date"].shift(periods=1)
+        df_ww["time_diff"] = (df_ww["Date"] - df_ww["date_prev_ww"]).dt.days
       
+      
+      average_time_ww = round(np.mean(df_ww["time_diff"]), 2)
+
+      #get average time between golden goose
+      df_gg = df[df["GOLDEN GOOSE"] == "GOLDEN GOOSE"]
+      df_gg.reset_index(level=0, inplace=True)
+      if (interval=="1m" or interval=="5m" or interval=="15m" or interval=="60m"):
+        df_gg["date_prev_gg"] = df_gg["Datetime"].shift(periods=1)
+        df_gg["time_diff"] = (df_gg["Datetime"] - df_gg["date_prev_gg"]).dt.days
+      else:
+        df_gg["date_prev_gg"] = df_gg["Date"].shift(periods=1)
+        df_gg["time_diff"] = (df_gg["Date"] - df_gg["date_prev_gg"]).dt.days
+      
+      
+      average_time_gg = round(np.mean(df_gg["time_diff"]), 2)
+      
+
+      
+    
+      
+      
+
+
+      
+
+
       #drop the calculator columns
       df.drop(columns=["H day -1", "H day +1", "H day -2", "L day -1", "L day +1", "L day -2", "pre HH", "pre LL"], inplace=True)
   
@@ -126,6 +164,9 @@ def stock_looper(stocks, period, interval):
 
       worksheet.add_table(0, 0, max_row, max_col, {'columns': column_settings})
 
+      worksheet.write("L1", "Average time between Wicked Wangos = {} days".format(average_time_ww))
+      worksheet.write("L2", "Average time between Golden Geese = {} days".format(average_time_gg))
+
       #formats for highlighting
       green = workbook.add_format({'bold': 1, "bg_color": '#C6EFCE', "font_color": '#006100'})
 
@@ -159,7 +200,6 @@ def stock_looper(stocks, period, interval):
 
 def get_day_week_month():
   stocks = stock_var.get().upper().replace(" ", "").split(',')
-  print("Getting data for "+[stock+" " for stock in stocks])
   print("Getting 1 minute data")
   stock_looper(stocks, "7d", "1m")
   print("Getting 5 minute data")
