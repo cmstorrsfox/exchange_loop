@@ -159,13 +159,20 @@ def stock_looper(stocks, period, interval):
 
 def get_day_week_month():
   stocks = stock_var.get().upper().replace(" ", "").split(',')
-  print(stocks)
+  print("Getting data for "+[stock+" " for stock in stocks])
+  print("Getting 1 minute data")
   stock_looper(stocks, "7d", "1m")
+  print("Getting 5 minute data")
   stock_looper(stocks, "1mo", "5m")
+  print("Getting 15 minute data")
   stock_looper(stocks, "1mo", "15m")
+  print("Getting 60 minute data")
   stock_looper(stocks, "2y", "60m")
+  print("Getting 1 day data")
   stock_looper(stocks, "max", "1d")
+  print("Getting 1 week data")
   stock_looper(stocks, "max", "1wk")
+  print("Getting 1 month data")
   stock_looper(stocks, "max", "1mo")
   print("all done!")
 
