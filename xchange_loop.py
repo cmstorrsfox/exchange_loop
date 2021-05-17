@@ -125,11 +125,7 @@ def stock_looper(stocks, period, interval):
         df["Datetime"] = df["Datetime"].dt.tz_localize(tz=None)
         df.set_index('Datetime', drop=True, inplace=True)
       
-      #save df and ticker to tuple
-      ticker_df_tuple = (ticker, df)
 
-      #append to array of dfs for later loop
-      stock_dfs.append(ticker_df_tuple)
       if i < len(stocks):
         print("done - moving on to next stock")
       else:
