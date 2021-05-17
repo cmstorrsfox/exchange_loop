@@ -107,11 +107,10 @@ def stock_looper(stocks, period, interval):
 
   
 
-  writer = pd.ExcelWriter(save_path+'/Stock overview - {} - {}.xlsx'.format(period, interval), engine="xlsxwriter")
-  
+    writer = pd.ExcelWriter(save_path+'/Stock overview {} - {} - {}.xlsx'.format(ticker, period, interval), engine="xlsxwriter")
+    
 
-  
-  for ticker, df in stock_dfs:
+    
     try:
       
       df.to_excel(writer, sheet_name=ticker)
@@ -148,11 +147,13 @@ def stock_looper(stocks, period, interval):
 
       worksheet.conditional_format("J2:J{}".format(max_row), {"type": "cell", "criteria": "equal to", "value": '"WICKED WANGO"', "format": orange})
 
+      writer.save()
+
     except(error):
       print("an error occurred when writing the worksheet. Moving on to next stock")
       print(error)
       pass
-  writer.save()
+  
   
   
 
